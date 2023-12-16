@@ -1,18 +1,23 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from threading import Thread
-from eeg_sdk import EEGSDK
+from Eeg_sdk import EEGSDK
+
+
+eeg_sdk = EEGSDK(serial_port='COM5', baud_rate=9600)
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 eeg_sdk = None
 
-@app.route('/api/status', methods=['GET'])
+@app.route('/status', methods=['GET'])
 def get_status():
     if eeg_sdk:
         return jsonify(eeg_sdk.to_json())
     else:
         return jsonify({"status": "error", "message": "EEGSDK not initialized"}), 500
 
-@app.route('/api/start', methods=['POST'])
+@app.route('/start', methods=['POST'])
 def start_data_acquisition():
     if eeg_sdk:
         eeg_sdk.start_data_acquisition()
@@ -20,11 +25,20 @@ def start_data_acquisition():
     else:
         return jsonify({"status": "error", "message": "EEGSDK not initialized"}), 500
 
-@app.route('/api/stop', methods=['POST'])
+@app.route('/stop', methods=['POST'])
 def stop_data_acquisition():
     if eeg_sdk:
         eeg_sdk.stop_data_acquisition()
         return jsonify({"status": "success", "message": "Data acquisition stopped"})
+    else:
+        return jsonify({"status": "error", "message": "EEGSDK not initialized"}), 500
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    if eeg_sdk:
+        # Modify this part to return the actual data you want to display
+        data = {"data": "your_data_here"}
+        return jsonify(data)
     else:
         return jsonify({"status": "error", "message": "EEGSDK not initialized"}), 500
 
