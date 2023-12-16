@@ -1,0 +1,5 @@
+Flask==2.0.1
+pyserial==3.5
+pylsl==1.15.0
+
+
